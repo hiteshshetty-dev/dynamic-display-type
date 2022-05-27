@@ -1,0 +1,39 @@
+.info {
+    background: rgb(222, 235, 255);
+    padding: 8px;
+    border-radius: 3px;
+    display: flex;
+}
+.info__inline{
+    background: rgb(222, 235, 255);
+    padding: 8px;
+    border-radius: 3px;
+    display: inline-flex;
+}
+.info__wrapper{
+    line-height: 1.5;
+    color: #222;
+    font-family: Inter;
+    font-size: .8125rem;
+    font-weight: 400;
+    margin: 3px 0 0;
+}
+
+.p-x-6 {
+    padding: 0 6px;
+}
+
+.p-t-1 {
+    padding-top: 1px;
+}
+
+.info__content {
+    flex: 1;
+}
+
+.info__modal .ReactModal__Content__body{
+    min-height: 0px !important;
+}
+#inline-notice-modal .Field{
+    margin-bottom: 0;
+}
