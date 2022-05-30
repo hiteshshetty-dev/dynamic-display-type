@@ -37,8 +37,8 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
-        "@contentstack/app-sdk": "github:contentstack/app-sdk#asset-extension",
-        "@contentstack/venus-components": "^1.0.3",
+        "@contentstack/app-sdk": "github:contentstack/app-sdk#feat/dynamic-display-type",
+        "@contentstack/venus-components": "github:contentstack/venus-components#feat/dynamic-display-type",
         "@emotion/core": "^10.0.22",
         "react": "^16.11.0",
         "react-dom": "^16.13.1"

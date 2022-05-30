@@ -13,14 +13,6 @@ export default ContentstackSDK.init().then(async (sdk) => {
 
     const DynamicElementType = RTE('dynamic-type', (rte) => {
         // override isInline method to return true for dynamic-type element
-        const inline = rte._adv.editor.isInline
-        rte._adv.editor.isInline = (element:any) => {
-            if(element.type === 'dynamic-type' && element.attrs.inline) {
-                return true
-            }
-            return inline(element)
-        }
-        //
         const handleClick = (newRte:any,element:any,path:any) => {
             cbModal({
                 component: (extraProps:any) => <Modal {...extraProps} rte={newRte} path={path} element={element}/>,
@@ -34,7 +26,12 @@ export default ContentstackSDK.init().then(async (sdk) => {
 
         return {
             title: "Dynamic Type",
-            elementType: ["block"],
+            elementType: (element) => {
+                if(element.attrs.inline) {
+                    return "inline"
+                }
+                return "block"
+            },
             icon: <Icon className='pr-6' icon="Edit" size="original" />,
             render: (props:any) => {
                 const isInline = props.element?.attrs?.inline || false
