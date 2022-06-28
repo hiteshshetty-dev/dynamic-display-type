@@ -1,6 +1,12 @@
 import React from 'react'
 import { ModalHeader, ModalBody, ModalFooter, Button, ButtonGroup, Checkbox, Field } from '@contentstack/venus-components'
+import { flattenDeep } from 'lodash'
 
+const generateFragment = (child:any) => ({
+    type: 'fragment',
+    attrs:{},
+    children: [child]
+})
 const Modal = (props: any) => {
     const [checked, setChecked] = React.useState(props.element?.attrs?.inline || false)
     const handleChange = (e: any) => {
@@ -12,30 +18,33 @@ const Modal = (props: any) => {
         const [parentNode,] = props.rte.getNode(parentPath)
         if(checked !== prevState) {
             if(checked) {
-                let shouldWrap = Array.from(parentNode.children).some((sibling:any) => {
-                    if(sibling.uid === props.element.uid){
-                        return false
+                let parentChildren = Array.from(parentNode.children).map((child:any) => {
+                    if(child && child.hasOwnProperty('type') && child.type === 'dynamic-type'){
+                        return {...child,attrs:{inline:checked}}
                     }
-                    return !props.rte._adv.editor.isInline(sibling)
+                    if(child && child.hasOwnProperty('type') && child.type === 'fragment'){
+                        return child.children
+                    }
+                    return child
                 })
-                if (shouldWrap) {
-                    props.rte.wrapNode({ type: "p", attrs: {} }, { at: props.path })
-                    const newPath = [...props.path, 0]
-                    props.rte.updateNode('dynamic-type', { inline: checked }, { at: newPath })
-                }else{
-                    props.rte.updateNode('dynamic-type', { inline: checked }, { at: props.path })
-                }
+                parentChildren = flattenDeep(parentChildren)                
+                props.rte.removeNode(parentNode)
+                props.rte.insertNode({...parentNode,children: parentChildren}, { at: parentPath })
+
             }else{
-                props.rte._adv.Editor.withoutNormalizing(props.rte._adv.editor, () => {
-                    props.rte.updateNode('dynamic-type', { inline: checked }, { at: props.path })
-                    if (parentNode.type === 'p') {
-                        props.rte.unWrapNode({ at: props.path,match: (node:any) => node.type === 'p'  })
+                let parentChildren = Array.from(parentNode.children).map((child:any) => {
+                    if(child && child.hasOwnProperty('type') && child.type === 'dynamic-type'){
+                        return {...child,attrs:{inline:checked}}
                     }
+                    if(props.rte._adv.editor.isInline(child) || child.hasOwnProperty('text')){
+                        return generateFragment(child)
+                    }
+                    return child
                 })
-                
+                props.rte.removeNode(parentNode)
+                props.rte.insertNode({...parentNode,children: parentChildren}, { at: parentPath })
             }
         }
-
         props.closeModal()
     }
     return (
